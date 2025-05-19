@@ -1,0 +1,12 @@
+workflow: "deploy_app"
+tasks: [
+  {
+    name: "build",
+    command: "make build"
+  },
+  {
+    name: "test",
+    command: "make test",
+    depends_on: ["build"]
+  }
+]
