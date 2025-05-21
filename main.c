@@ -5,6 +5,9 @@
 #include "ir.h"
 #include "executor.h"
 
+#define WHITE 0
+#define GRAY 1
+#define BLACK 2
 
 extern int yyparse();
 extern FILE *yyin;
@@ -35,6 +38,67 @@ int check_dependencies(Workflow *wf) {
     return 1;
 }
 
+Task* find_task_by_name(Workflow *wf, const char *name) {
+    for (Task *t = wf->tasks; t; t = t->next) {
+        if (strcmp(t->name, name) == 0) return t;
+    }
+    return NULL;
+}
+
+int dfs_check(Task *task, Workflow *wf, int *colors, char **task_names, int task_count) {
+    int index = -1;
+    for (int i = 0; i < task_count; ++i) {
+        if (strcmp(task->name, task_names[i]) == 0) {
+            index = i;
+            break;
+        }
+    }
+
+    if (index == -1) return 0; // Task not found (should not happen)
+
+    if (colors[index] == GRAY) return 1;     // cycle found
+    if (colors[index] == BLACK) return 0;    // already visited
+
+    colors[index] = GRAY;
+
+    for (int i = 0; i < task->depends_count; i++) {
+        Task *dep = find_task_by_name(wf, task->depends_on[i]);
+        if (dep && dfs_check(dep, wf, colors, task_names, task_count)) {
+            return 1; // cycle found
+        }
+    }
+
+    colors[index] = BLACK;
+    return 0;
+}
+
+int check_cycles(Workflow *wf) {
+    int task_count = 0;
+    for (Task *t = wf->tasks; t; t = t->next) task_count++;
+
+    int *colors = calloc(task_count, sizeof(int));
+    char **task_names = malloc(sizeof(char *) * task_count);
+
+    int idx = 0;
+    for (Task *t = wf->tasks; t; t = t->next) {
+        task_names[idx++] = t->name;
+    }
+
+    for (int i = 0; i < task_count; i++) {
+        Task *t = find_task_by_name(wf, task_names[i]);
+        if (colors[i] == WHITE && dfs_check(t, wf, colors, task_names, task_count)) {
+            fprintf(stderr, "Semantic error: Cycle detected involving task '%s'\n", task_names[i]);
+            free(colors);
+            free(task_names);
+            return 0;
+        }
+    }
+
+    free(colors);
+    free(task_names);
+    return 1;
+}
+
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         fprintf(stderr, "Usage: %s <input.yaml>\n", argv[0]);
@@ -62,6 +126,12 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
+        if (!check_cycles(workflow)) {
+            fclose(file);
+            free_workflow(workflow);
+            return 1;
+        }
+        
         print_workflow(workflow);
         IRWorkflow *ir = generate_ir(workflow);
         if (!ir) {
