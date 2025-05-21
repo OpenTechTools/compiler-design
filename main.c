@@ -99,6 +99,18 @@ int check_cycles(Workflow *wf) {
     return 1;
 }
 
+int check_duplicate_tasks(Workflow *wf) {
+    for (Task *t1 = wf->tasks; t1 != NULL; t1 = t1->next) {
+        for (Task *t2 = t1->next; t2 != NULL; t2 = t2->next) {
+            if (strcmp(t1->name, t2->name) == 0) {
+                fprintf(stderr, "Semantic error: Duplicate task name '%s'\n", t1->name);
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         fprintf(stderr, "Usage: %s <input.yaml>\n", argv[0]);
@@ -131,7 +143,13 @@ int main(int argc, char *argv[]) {
             free_workflow(workflow);
             return 1;
         }
-        
+
+        if (!check_duplicate_tasks(workflow)) {
+            fclose(file);
+            free_workflow(workflow);
+            return 1;
+        }
+
         print_workflow(workflow);
         IRWorkflow *ir = generate_ir(workflow);
         if (!ir) {
