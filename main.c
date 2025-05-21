@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "include/ast.h"
+#include "ir.h"
+
 
 extern int yyparse();
 extern FILE *yyin;
@@ -60,6 +62,18 @@ int main(int argc, char *argv[]) {
         }
 
         print_workflow(workflow);
+        IRWorkflow *ir = generate_ir(workflow);
+        if (!ir) {
+            fprintf(stderr, "IR generation failed.\n");
+            fclose(file);
+            free_workflow(workflow);
+            return 1;
+        }
+
+        printf("\n--- IR ---\n");
+        print_ir(ir);
+        free_ir(ir);
+        
         free_workflow(workflow);
     } else {
         fprintf(stderr, "Parsing failed.\n");
