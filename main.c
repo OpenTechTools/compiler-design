@@ -3,6 +3,7 @@
 #include <string.h>
 #include "include/ast.h"
 #include "ir.h"
+#include "executor.h"
 
 
 extern int yyparse();
@@ -72,8 +73,11 @@ int main(int argc, char *argv[]) {
 
         printf("\n--- IR ---\n");
         print_ir(ir);
+        printf("\n--- Execution ---\n");
+        execute_workflow(ir);
+
         free_ir(ir);
-        
+
         free_workflow(workflow);
     } else {
         fprintf(stderr, "Parsing failed.\n");
