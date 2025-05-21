@@ -82,11 +82,9 @@
         ;
     
     depends_on_field:
-        DEPENDS_ON ':' '[' STRING ']'
+        DEPENDS_ON ':' '[' string_list ']'
         {
-            $$.array = malloc(sizeof(char *));
-            $$.array[0] = $4;
-            $$.count = 1;
+            $$ = $4;
         }
     ;
 

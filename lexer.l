@@ -1,3 +1,4 @@
+%option noinput nounput
 %{
     #include "parser.h"
     #include <stdlib.h>

@@ -3,8 +3,8 @@ CFLAGS = -Wall -g -Iinclude
 
 all: compiler
 
-compiler: lexer.o parser.o main.o ast.o ir.o
-	$(CC) $(CFLAGS) -o compiler lexer.o parser.o main.o ast.o ir.o
+compiler: lexer.o parser.o main.o ast.o ir.o executor.o
+	$(CC) $(CFLAGS) -o compiler lexer.o parser.o main.o ast.o ir.o executor.o
 
 # Bison generates both files
 parser.tab.h parser.c: parser.y
@@ -30,6 +30,9 @@ ast.o: src/ast.c
 
 ir.o: src/ir.c include/ir.h include/ast.h
 	$(CC) $(CFLAGS) -c src/ir.c -o ir.o
+
+executor.o: src/executor.c include/executor.h
+	$(CC) $(CFLAGS) -c src/executor.c -o executor.o
 
 clean:
 	rm -f *.o parser.c parser.h lexer.c compiler

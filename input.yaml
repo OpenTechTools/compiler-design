@@ -1,12 +1,17 @@
-workflow: "deploy_app"
+workflow: "build_and_test"
 tasks: [
   {
-    name: "build",
-    command: "make build"
+    name: "compile",
+    command: "gcc -o main main.c"
   },
   {
     name: "test",
-    command: "make test",
-    depends_on: ["build"]
+    command: "./test_suite",
+    depends_on: ["compile"]
+  },
+  {
+    name: "deploy",
+    command: "./deploy.sh",
+    depends_on: ["compile", "test"]
   }
 ]
