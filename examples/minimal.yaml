@@ -1,0 +1,9 @@
+# Tests the minimal valid input with one task and no dependencies.
+
+workflow: "simple"
+tasks: [
+  {
+    name: "task1",
+    command: "echo Hello"
+  }
+]

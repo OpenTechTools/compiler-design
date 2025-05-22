@@ -1,0 +1,17 @@
+# Tests a task with multiple dependencies (main_task depends on prep1 and prep2).
+workflow: "multi_deps"
+tasks: [
+  {
+    name: "prep1",
+    command: "python prep1.py"
+  },
+  {
+    name: "prep2",
+    command: "python prep2.py"
+  },
+  {
+    name: "main_task",
+    command: "python main.py",
+    depends_on: ["prep1", "prep2"]
+  }
+]

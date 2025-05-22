@@ -1,0 +1,15 @@
+# Tests the check_dependencies function in main.c to detect an undefined dependency (task3 does not exist).
+# It is an invalid case
+
+workflow: "invalid_deps"
+tasks: [
+  {
+    name: "task1",
+    command: "echo Task1"
+  },
+  {
+    name: "task2",
+    command: "echo Task2",
+    depends_on: ["task3"]
+  }
+]

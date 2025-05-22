@@ -26,9 +26,10 @@ IRWorkflow* generate_ir(Workflow *wf) {
     IRWorkflow *ir = malloc(sizeof(IRWorkflow));
     ir->name = strdup(wf->name);
     ir->tasks = NULL;
-
+    printf("Generating IR for workflow: %s\n", ir->name);
     IRTask *tail = NULL;
     for (Task *t = wf->tasks; t != NULL; t = t->next) {
+        printf("Processing task: %s\n", t->name);
         IRTask *ir_task = create_ir_task(t);
         if (!ir->tasks) {
             ir->tasks = ir_task;
@@ -38,7 +39,6 @@ IRWorkflow* generate_ir(Workflow *wf) {
             tail = ir_task;
         }
     }
-
     return ir;
 }
 

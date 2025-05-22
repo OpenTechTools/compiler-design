@@ -1,0 +1,10 @@
+# (Missing Comma)
+# Tests the parser’s handling of invalid syntax (missing comma between name and command fields).
+
+workflow: "broken"
+tasks: [
+  {
+    name: "task1"
+    command: "echo Task1"
+  }
+]
