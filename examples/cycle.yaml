@@ -1,0 +1,19 @@
+# Tests the check_cycles function in main.c to detect a dependency cycle (task1 -> task2 -> task3 -> task1).
+workflow: "cyclic_workflow"
+tasks: [
+  {
+    name: "task1",
+    command: "echo Task1",
+    depends_on: ["task2"]
+  },
+  {
+    name: "task2",
+    command: "echo Task2",
+    depends_on: ["task3"]
+  },
+  {
+    name: "task3",
+    command: "echo Task3",
+    depends_on: ["task1"]
+  }
+]

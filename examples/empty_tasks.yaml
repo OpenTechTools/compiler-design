@@ -1,0 +1,4 @@
+# Tests the parser’s handling of an empty task list.
+
+workflow: "empty_workflow"
+tasks: []
