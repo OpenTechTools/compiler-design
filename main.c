@@ -54,7 +54,11 @@ int dfs_check(Task *task, Workflow *wf, int *colors, char **task_names, int task
         }
     }
 
-    if (index == -1) return 0; // Task not found (should not happen)
+    if (index == -1) {
+        fprintf(stderr, "Task %s not found in task_names\n", task->name);
+        return 0;
+    }
+    fprintf(stderr, "Visiting task %s (index %d, color %d)\n", task->name, index, colors[index]);
 
     if (colors[index] == GRAY) return 1;     // cycle found
     if (colors[index] == BLACK) return 0;    // already visited
@@ -125,26 +129,32 @@ int main(int argc, char *argv[]) {
 
     yyin = file;
 
+    workflow = NULL; // Ensure workflow is NULL before parsing
+
     if (yyparse() == 0) {
         if (!workflow) {
             fprintf(stderr, "No workflow parsed.\n");
             fclose(file);
             return 1;
         }
-
+        
+        printf("Before semantic checks:\n");
+        print_workflow(workflow);
+        
         if (!check_dependencies(workflow)) {
+            fprintf(stderr, "Dependency check failed.\n");
             fclose(file);
             free_workflow(workflow);
             return 1;
         }
-
         if (!check_cycles(workflow)) {
+            fprintf(stderr, "Cycle check failed.\n");
             fclose(file);
             free_workflow(workflow);
             return 1;
         }
-
         if (!check_duplicate_tasks(workflow)) {
+            fprintf(stderr, "Duplicate task check failed.\n");
             fclose(file);
             free_workflow(workflow);
             return 1;
@@ -165,7 +175,6 @@ int main(int argc, char *argv[]) {
         execute_workflow(ir);
 
         free_ir(ir);
-
         free_workflow(workflow);
     } else {
         fprintf(stderr, "Parsing failed.\n");

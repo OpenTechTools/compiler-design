@@ -21,13 +21,28 @@ Task* create_task(const char *name, const char *command) {
 }
 
 void add_task(Workflow *wf, Task *task) {
+    if (!wf) {
+        printf("Error: Workflow is NULL in add_task\n");
+        return;
+    }
+    printf("Adding task: %s to workflow %s\n", task->name, wf->name);
     if (!wf->tasks) {
+        printf("Setting first task: %s\n", task->name);
         wf->tasks = task;
     } else {
+        printf("Appending task: %s\n", task->name);
         Task *curr = wf->tasks;
-        while (curr->next) curr = curr->next;
+        while (curr->next) {
+            printf("Current task in list: %s\n", curr->name);
+            curr = curr->next;
+        }
         curr->next = task;
     }
+    printf("Task list after adding %s: ", task->name);
+    for (Task *t = wf->tasks; t; t = t->next) {
+        printf("%s -> ", t->name);
+    }
+    printf("NULL\n");
 }
 
 void free_workflow(Workflow *wf) {
@@ -50,6 +65,9 @@ void free_workflow(Workflow *wf) {
 
 void print_workflow(const Workflow *wf) {
     printf("Workflow: %s\n", wf->name);
+    if (!wf->tasks) {
+        printf("No tasks in workflow!\n");
+    }
     Task *t = wf->tasks;
     while (t) {
         printf(" Task: %s\n", t->name);
